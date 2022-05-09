@@ -3,6 +3,7 @@ sidebar: false
 ads: false
 editLink: false
 sponsors: false
+vuejobs: false
 ---
 
 <script setup>
@@ -13,6 +14,10 @@ import SponsorsGroup from '/@theme/components/SponsorsGroup.vue'
 
 Vue.js is an MIT licensed open source project and completely free to use.
 The tremendous amount of effort needed to maintain such a large ecosystem and develop new features for the project is only made sustainable thanks to the generous financial backing of our sponsors.
+
+## How to Sponsor
+
+Sponsorships can be done via [GitHub Sponsors](https://github.com/sponsors/yyx990803) or [OpenCollective](https://opencollective.com/vuejs). Invoices can be obtained via GitHub's payment system. Both monthly-recurring sponsorships and one-time donations are accepted. Recurring sponsorships are entitled to logo placements as specified in [Sponsorship Tiers](#tier-benefits).
 
 ## Sponsoring Vue as a Business
 
@@ -28,10 +33,6 @@ If you are an individual user and have enjoyed the productivity of using Vue, co
 
 You can also try to convince your employer to sponsor Vue as a business. This may not be easy, but business sponsorships typically make a much larger impact on the sustainability of OSS projects than individual donations, so you will help us much more if you succeed.
 
-## How to Sponsor
-
-Sponsorships can be done via [GitHub Sponsors](https://github.com/sponsors/yyx990803) or [OpenCollective](https://opencollective.com/vuejs). Invoices can be obtained via GitHub's payment system. Both monthly-recurring sponsorships and one-time donations are accepted. Recurring sponsorships are entitled to logo placements based on tiers specified below.
-
 ## Tier Benefits
 
 - **Global Special**:
@@ -45,9 +46,9 @@ Sponsorships can be done via [GitHub Sponsors](https://github.com/sponsors/yyx99
 - **Gold (USD$500/mo)**:
   - Large logo placement on the front page of [vuejs.org](/).
   - Large Logo placement in the README of `vuejs/core` and `vuejs/vue`.
-- **Silver (USD$500/mo)**:
+- **Silver (USD$250/mo)**:
   - Medium logo placement in the `BACKERS.md` file of `vuejs/core` and `vuejs/vue`.
-- **Bronze (USD$500/mo)**:
+- **Bronze (USD$100/mo)**:
   - Small logo placement in the `BACKERS.md` file of `vuejs/core` and `vuejs/vue`.
 - **Generous Backer (USD$50/mo)**:
   - Name listed in the `BACKERS.md` file of `vuejs/core` and `vuejs/vue`, above other individual backers.

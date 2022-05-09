@@ -55,7 +55,7 @@ Mounts the application instance in a container element.
 
 - **Details**
 
-  The first argument can either be a CSS selector (the first matched element will be used) or an actual DOM element. Returns the root component instance.
+  The argument can either be an actual DOM element or a CSS selector (the first matched element will be used). Returns the root component instance.
 
   If the component has a template or a render function defined, it will replace any existing DOM nodes inside the container. Otherwise, if the runtime compiler is available, the `innerHTML` of the container will be used as the template.
 
@@ -387,7 +387,7 @@ Assign a custom handler for runtime warnings from Vue.
 
 ## app.config.performance
 
-Set this to `true` to enable component init, compile, render and patch performance tracing in the browser devtool performance/timeline panel. Only works in development mode and in browsers that support the [performance.mark](/) API.
+Set this to `true` to enable component init, compile, render and patch performance tracing in the browser devtool performance/timeline panel. Only works in development mode and in browsers that support the [performance.mark](https://developer.mozilla.org/en-US/docs/Web/API/Performance/mark) API.
 
 - **Type**: `boolean`
 
@@ -395,14 +395,14 @@ Set this to `true` to enable component init, compile, render and patch performan
 
 ## app.config.compilerOptions
 
-Configure runtime compiler options. Values set on this object will be passed to the in-browser template compiler and affect every component in the configured app. Note you can also override these options on a per-component basis using the [`compilerOptions` option](/).
+Configure runtime compiler options. Values set on this object will be passed to the in-browser template compiler and affect every component in the configured app. Note you can also override these options on a per-component basis using the [`compilerOptions` option](/api/options-rendering.html#compileroptions).
 
 ::: warning Important
 This config option is only respected when using the full build (i.e. the standalone `vue.js` that can compile templates in the browser). If you are using the runtime-only build with a build setup, compiler options must be passed to `@vue/compiler-dom` via build tool configurations instead.
 
-- For `vue-loader`: [pass via the `compilerOptions` loader option](/). Also see [how to configure it in `vue-cli`](/).
+- For `vue-loader`: [pass via the `compilerOptions` loader option](https://vue-loader.vuejs.org/options.html#compileroptions). Also see [how to configure it in `vue-cli`](https://cli.vuejs.org/guide/webpack.html#modifying-options-of-a-loader).
 
-- For `vite`: [pass via `@vitejs/plugin-vue` options](/).
+- For `vite`: [pass via `@vitejs/plugin-vue` options](https://github.com/vitejs/vite/tree/main/packages/plugin-vue#options).
   :::
 
 ### app.compilerOptions.isCustomElement
@@ -438,11 +438,11 @@ Adjusts template whitespace handling behavior.
 
 - **Details**
 
-  Vue removes / condenses whitespaces in templates to produce more efficient compiled output. The default strategy is "condense", with the following behavior:
+  Vue removes / condenses whitespace characters in templates to produce more efficient compiled output. The default strategy is "condense", with the following behavior:
 
-  1. Leading / ending whitespaces inside an element are condensed into a single space.
-  2. Whitespaces between elements that contain newlines are removed.
-  3. Consecutive whitespaces in text nodes are condensed into a single space.
+  1. Leading / ending whitespace characters inside an element are condensed into a single space.
+  2. Whitespace characters between elements that contain newlines are removed.
+  3. Consecutive whitespace characters in text nodes are condensed into a single space.
 
   Setting this option to `'preserve'` will disable (2) and (3).
 

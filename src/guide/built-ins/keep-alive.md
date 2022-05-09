@@ -57,21 +57,21 @@ By default, `<KeepAlive>` will cache any component instance inside. We can custo
 ```vue-html
 <!-- comma-delimited string -->
 <KeepAlive include="a,b">
-  <component :is="view"></component>
+  <component :is="view" />
 </KeepAlive>
 
 <!-- regex (use `v-bind`) -->
 <KeepAlive :include="/a|b/">
-  <component :is="view"></component>
+  <component :is="view" />
 </KeepAlive>
 
 <!-- Array (use `v-bind`) -->
 <KeepAlive :include="['a', 'b']">
-  <component :is="view"></component>
+  <component :is="view" />
 </KeepAlive>
 ```
 
-The match is checked against the component's [`name`](/api/options-misc.html#name) option, so components that need to be conditionally cached by `KeepAlive` must explicitly delcare a `name` option.
+The match is checked against the component's [`name`](/api/options-misc.html#name) option, so components that need to be conditionally cached by `KeepAlive` must explicitly declare a `name` option.
 
 ## Max Cached Instances
 
@@ -85,7 +85,7 @@ We can limit the maximum number of component instances that can be cached via th
 
 ## Lifecycle of Cached Instance
 
-When a component instance is removed from the DOM but is part of a component tree cached by `<KeepAlive>`, it goes into **deactivated** state instead of unmounted. When a component instance is inserted into the DOM as part of a cached tree, it is **activated**.
+When a component instance is removed from the DOM but is part of a component tree cached by `<KeepAlive>`, it goes into a **deactivated** state instead of being unmounted. When a component instance is inserted into the DOM as part of a cached tree, it is **activated**.
 
 <div class="composition-api">
 
@@ -129,7 +129,7 @@ export default {
 
 Note that:
 
-- <span class="composition-api">`onActivated`</span><span class="options-api">`activated`</span> is also called on mount, and <span class="composition-api">`onDectivated`</span><span class="options-api">`deactivated`</span> on unmount.
+- <span class="composition-api">`onActivated`</span><span class="options-api">`activated`</span> is also called on mount, and <span class="composition-api">`onDeactivated`</span><span class="options-api">`deactivated`</span> on unmount.
 
 - Both hooks work for not only the root component cached by `<KeepAlive>`, but also descendent components in the cached tree.
 

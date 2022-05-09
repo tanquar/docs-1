@@ -1,5 +1,7 @@
 # Component Registration
 
+<VueSchoolLink href="https://vueschool.io/lessons/vue-3-global-vs-local-vue-components" title="Free Vue.js Component Registration Lesson"/>
+
 > This page assumes you've already read the [Components Basics](/guide/essentials/component-basics). Read that first if you are new to components.
 
 A Vue component needs to be "registered" so that Vue knows where to locate its implementation when it is encountered in a template. There are two ways to register components: global and local.
@@ -26,7 +28,7 @@ app.component(
 If using SFCs, you will be registering the imported `.vue` files:
 
 ```js
-import MyComponent from './App.vue`
+import MyComponent from './App.vue'
 
 app.component('MyComponent', MyComponent)
 ```
@@ -63,7 +65,7 @@ Local registration scopes the availability of the registered components to the c
 
 <div class="composition-api">
 
-When using SFC with `<script setup>`, imported components are automatically registered locally:
+When using SFC with `<script setup>`, imported components can be locally used without registration:
 
 ```vue
 <script setup>
@@ -75,7 +77,7 @@ import ComponentA from './ComponentA.vue'
 </template>
 ```
 
-If not using SFC, you will need to use the `components` option:
+In non-`<script setup>`, you will need to use the `components` option:
 
 ```js
 import ComponentA from './ComponentA.js'

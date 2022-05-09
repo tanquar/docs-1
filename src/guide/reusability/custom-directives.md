@@ -108,7 +108,7 @@ Custom directives should only be used when the desired functionality can only be
 A directive definition object can provide several hook functions (all optional):
 
 ```js
-const myDir = {
+const myDirective = {
   // called before bound element's attributes
   // or event listeners are applied
   created(el, binding, vnode, prevVnode) {
@@ -128,7 +128,6 @@ const myDir = {
   beforeUnmount() {},
   // called when the parent component is unmounted
   unmounted() {}
-  }
 }
 ```
 
