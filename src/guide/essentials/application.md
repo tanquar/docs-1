@@ -43,8 +43,7 @@ We will discuss how to define and compose multiple components together in later 
 
 ## Mounting the App
 
-An application instance won't render anything until its `.mount()` method is called.
-It expects a "container" argument, which can either be an actual DOM element or a selector string:
+An application instance won't render anything until its `.mount()` method is called. It expects a "container" argument, which can either be an actual DOM element or a selector string:
 
 ```html
 <div id="app"></div>
@@ -94,7 +93,7 @@ app.config.errorHandler = (err) => {
 }
 ```
 
-The application instance also provides a few methods for registering app-scoped assets. for example, registering a component:
+The application instance also provides a few methods for registering app-scoped assets. For example, registering a component:
 
 ```js
 app.component('TodoDeleteButton', TodoDeleteButton)
@@ -120,4 +119,4 @@ const app2 = createApp({
 app2.mount('#container-2')
 ```
 
-If you are using Vue to enhance server-rendered HTML and only need Vue to control specific parts of a large page, avoid mounting a singe Vue application instance on the entire page. Instead, create multiple small application instances and mount them on the elements they are responsible for.
+If you are using Vue to enhance server-rendered HTML and only need Vue to control specific parts of a large page, avoid mounting a single Vue application instance on the entire page. Instead, create multiple small application instances and mount them on the elements they are responsible for.

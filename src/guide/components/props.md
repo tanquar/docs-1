@@ -2,6 +2,10 @@
 
 > This page assumes you've already read the [Components Basics](/guide/essentials/component-basics). Read that first if you are new to components.
 
+<div class="options-api">
+  <VueSchoolLink href="https://vueschool.io/lessons/vue-3-reusable-components-with-props" title="Free Vue.js Props Lesson"/>
+</div>
+
 ## Props Declaration
 
 Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in the next section).
@@ -376,7 +380,7 @@ To specify prop validations, you can provide an object with validation requireme
 ```js
 defineProps({
   // Basic type check
-  // (`null` and `undefined` values will pass any type validation)
+  //  (`null` and `undefined` values will allow any type)
   propA: Number,
   // Multiple possible types
   propB: [String, Number],
@@ -427,7 +431,8 @@ Code inside the `defineProps()` argument **cannot access other variables declare
 ```js
 export default {
   props: {
-    // Basic type check (`null` and `undefined` values will pass any type validation)
+    // Basic type check
+    //  (`null` and `undefined` values will allow any type)
     propA: Number,
     // Multiple possible types
     propB: [String, Number],
@@ -472,6 +477,16 @@ export default {
 ```
 
 </div>
+
+Additional details:
+
+- All props are optional by default, unless `required: true` is specified.
+
+- An absent optional prop other than `Boolean` will have `undefined` value.
+  
+- The `Boolean` absent props will be cast to `false`. You should set a `default` value for it in order to get desired behavior.
+
+- If a `default` value is specified, it will be used if the resolved prop value is `undefined` - this includes both when the prop is absent, or an explicit `undefined` value is passed.
 
 When prop validation fails, Vue will produce a console warning (if using the development build).
 
@@ -571,3 +586,28 @@ The component can be used like this:
 <!-- equivalent of passing :disabled="false" -->
 <MyComponent />
 ```
+
+When a prop is declared to allow multiple types, e.g.
+
+<div class="composition-api">
+
+```js
+defineProps({
+  disabled: [Boolean, Number]
+})
+```
+
+</div>
+<div class="options-api">
+
+```js
+export default {
+  props: {
+    disabled: [Boolean, Number]
+  }
+}
+```
+
+</div>
+
+The casting rules for `Boolean` will apply regardless of type appearance order.

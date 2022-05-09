@@ -65,16 +65,16 @@ If you are looking for a lighter-weight alternative for no-build-step usage, che
 
 ## Browser Devtools
 
+<VueSchoolLink href="https://vueschool.io/lessons/using-vue-dev-tools-with-vuejs-3" title="Free Vue.js Devtools Lesson"/>
+
 The Vue browser devtools extension allows you to explore a Vue app's component tree, inspect the state of individual components, track state management events, and profile performance.
 
 ![devtools screenshot](https://raw.githubusercontent.com/vuejs/devtools/main/media/screenshot-shadow.png)
 
-<!-- TODO update links after swapping versions -->
-
 - [Documentation](https://devtools.vuejs.org/)
-- [Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/ljjemllljcmogpfapbkkighbhhppjdbg)
+- [Chrome Extension](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
 - [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-- [Standalone Electron app](https://github.com/vuejs/vue-devtools/blob/dev/packages/shell-electron/README.md)
+- [Standalone Electron app](https://devtools.vuejs.org/guide/installation.html#standalone)
 
 ## TypeScript
 
@@ -154,5 +154,7 @@ The official loader that provides Vue SFC support in webpack. If you are using V
 - [Vue + Vite on Repl.it](https://replit.com/@templates/VueJS-with-Vite)
 - [Vue on CodeSandbox](https://codesandbox.io/s/vue-3)
 - [Vue on Codepen](https://codepen.io/pen/editor/vue)
+- [Vue on Components.studio](https://components.studio/create/vue3)
+- [Vue on WebComponents.dev](https://webcomponents.dev/create/cevue)
 
 <!-- TODO ## Backend Framework Integrations -->

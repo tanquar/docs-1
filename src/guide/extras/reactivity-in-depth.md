@@ -65,9 +65,9 @@ This `whenDepsChange()` function has the following tasks:
 
 ## How Reactivity Works in Vue
 
-We can't really track read and write of local variables like in the example. There's just no mechanism for doing that in vanilla JavaScript. What we **can** do though, is intercepting the read and write of **object properties**.
+We can't really track the reading and writing of local variables like in the example. There's just no mechanism for doing that in vanilla JavaScript. What we **can** do though, is intercept the reading and writing of **object properties**.
 
-There are two ways of intercepting property access in JavaScript: [getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/[setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set) and [Proxies](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). Vue 2 used getter/setters exclusively due to browser support limitations. In Vue 3, Proxies are used for reactive objects and getter/setters are used for refs. Here's the pseudo code that illustrates how they work:
+There are two ways of intercepting property access in JavaScript: [getter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/[setters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set) and [Proxies](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy). Vue 2 used getter/setters exclusively due to browser support limitations. In Vue 3, Proxies are used for reactive objects and getter/setters are used for refs. Here's some pseudo-code that illustrates how they work:
 
 ```js{4,8,17,21}
 function reactive(obj) {
@@ -86,11 +86,11 @@ function reactive(obj) {
 function ref(value) {
   const refObject = {
     get value() {
-      track(refObject, key)
+      track(refObject, 'value')
       return value
     },
     set value(newValue) {
-      trigger(refObject, key)
+      trigger(refObject, 'value')
       value = newValue
     }
   }
@@ -102,13 +102,13 @@ function ref(value) {
 Code snippets here and below are meant to explain the core concepts in the simplest form possible, so many details are omitted, and edge cases ignored.
 :::
 
-This explains a few things that we have discussed in the fundamentals section:
+This explains a few [limitations of reactive objects](/guide/essentials/reactivity-fundamentals.html#limitations-of-reactive) that we have discussed in the fundamentals section:
 
-- When you destructure a property from a reactive object into a local variable, the reactivity is "disconnected" because access to the local variable no longer triggers the get / set proxy traps.
+- When you assign or destructure a reactive object's property to a local variable, the reactivity is "disconnected" because access to the local variable no longer triggers the get / set proxy traps.
 
 - The returned proxy from `reactive()`, although behaving just like the original, has a different identity if we compare it to the original using the `===` operator.
 
-Inside `track()`, we check whether there is a currently running effect. If there is one, we lookup the subscriber effects (stored in a Set) to the property being tracked, and adds the effect to the Set:
+Inside `track()`, we check whether there is a currently running effect. If there is one, we lookup the subscriber effects (stored in a Set) for the property being tracked, and add the effect to the Set:
 
 ```js
 // This will be set right before an effect is about
@@ -147,11 +147,11 @@ function whenDepsChange(update) {
 }
 ```
 
-It wraps the raw `update` function into an effect that sets itself as the current active effect before running the actual update. This enables `track()` calls during the update to locate the current active effect.
+It wraps the raw `update` function in an effect that sets itself as the current active effect before running the actual update. This enables `track()` calls during the update to locate the current active effect.
 
 At this point, we have created an effect that automatically tracks its dependencies, and re-runs whenever a dependency changes. We call this a **Reactive Effect**.
 
-Vue provides an API that allows you to create reactive effects: [`watchEffect()`](/api/reactivity-core.html#watcheffect). In fact, you probably have noticed that it works pretty similar to the magical `whenDepsChange()` in the example. We can now rework the original example using actual Vue APIs:
+Vue provides an API that allows you to create reactive effects: [`watchEffect()`](/api/reactivity-core.html#watcheffect). In fact, you may have noticed that it works pretty similarly to the magical `whenDepsChange()` in the example. We can now rework the original example using actual Vue APIs:
 
 ```js
 import { ref, watchEffect } from 'vue'
@@ -169,7 +169,7 @@ watchEffect(() => {
 A0.value = 2
 ```
 
-Using a reactive effect to mutating a ref isn't the most interesting use case - in fact, using a computed property makes it more declarative:
+Using a reactive effect to mutate a ref isn't the most interesting use case - in fact, using a computed property makes it more declarative:
 
 ```js
 import { ref, computed } from 'vue'
@@ -202,7 +202,7 @@ In fact, this is pretty close to how a Vue component keeps the state and the DOM
 
 <div class="options-api">
 
-The `ref()`, `computed()` and `watchEffect()` APIs are all part of the Composition API. If you have only been using Options API with Vue so far, you'll notice that Composition API is closer to how Vue's reactivity system works under the hood. In fact, in Vue 3 the Options API is implemented on top of the Composition API. All property access on the component instance (`this`) trigger getter/setters for reactivity tracking, and options like `watch` and `computed` invoke their Composition API equivalents internally.
+The `ref()`, `computed()` and `watchEffect()` APIs are all part of the Composition API. If you have only been using Options API with Vue so far, you'll notice that Composition API is closer to how Vue's reactivity system works under the hood. In fact, in Vue 3 the Options API is implemented on top of the Composition API. All property access on the component instance (`this`) triggers getter/setters for reactivity tracking, and options like `watch` and `computed` invoke their Composition API equivalents internally.
 
 </div>
 
@@ -210,7 +210,7 @@ The `ref()`, `computed()` and `watchEffect()` APIs are all part of the Compositi
 
 Vue's reactivity system is primarily runtime-based: the tracking and triggering are all performed while the code is running directly in the browser. The pros of runtime reactivity is that it can work without a build step, and there are fewer edge cases. On the other hand, this makes it constrained by the syntax limitations of JavaScript.
 
-We have already encountered a limitation in the previous example: JavaScript does not provide a way for us to intercept read and write of local variables, so we have to always access reactive state as object properties, using either reactive objects or refs.
+We have already encountered a limitation in the previous example: JavaScript does not provide a way for us to intercept the reading and writing of local variables, so we have to always access reactive state as object properties, using either reactive objects or refs.
 
 We have been experimenting with the [Reactivity Transform](/guide/extras/reactivity-transform.html) feature to reduce the code verbosity:
 
@@ -225,7 +225,7 @@ const A2 = $computed(() => A0 + A1)
 A0 = 2
 ```
 
-This snippet compiles into exactly what we'd have written without the transform, by automatically appending `.value` after references of the variables. With Reactivity Transform, Vue's reactivity system becomes a hybrid one.
+This snippet compiles into exactly what we'd have written without the transform, by automatically appending `.value` after references to the variables. With Reactivity Transform, Vue's reactivity system becomes a hybrid one.
 
 ## Reactivity Debugging
 
@@ -368,26 +368,24 @@ If you are implementing a undo / redo feature, you likely want to take a snapsho
 We can integrate Immer with Vue via a simple composable:
 
 ```js
-import produce from "immer"
+import produce from 'immer'
 import { shallowRef } from 'vue'
 
 export function useImmer(baseState) {
   const state = shallowRef(baseState)
-
-  return {
-    state,
-    update(updater) {
-      state.value = produce(state.value, updater)
-    }
+  const update = (updater) => {
+    state.value = produce(state.value, updater)
   }
+
+  return [state, update]
 }
 ```
 
-[Try it in the Playground](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdCBzZXR1cD5cbmltcG9ydCB7IHVzZUltbWVyIH0gZnJvbSAnLi9pbW1lci5qcydcbiAgXG5jb25zdCB7IHN0YXRlOiBpdGVtcywgdXBkYXRlIH0gPSB1c2VJbW1lcihbXG4gIHtcbiAgICAgdGl0bGU6IFwiTGVhcm4gVnVlXCIsXG4gICAgIGRvbmU6IHRydWVcbiAgfSxcbiAge1xuICAgICB0aXRsZTogXCJVc2UgVnVlIHdpdGggSW1tZXJcIixcbiAgICAgZG9uZTogZmFsc2VcbiAgfVxuXSlcblxuZnVuY3Rpb24gdG9nZ2xlSXRlbShpbmRleCkge1xuICB1cGRhdGUoaXRlbXMgPT4ge1xuICAgIGl0ZW1zW2luZGV4XS5kb25lID0gIWl0ZW1zW2luZGV4XS5kb25lXG4gIH0pXG59XG48L3NjcmlwdD5cblxuPHRlbXBsYXRlPlxuICA8dWw+XG4gICAgPGxpIHYtZm9yPVwiKHsgdGl0bGUsIGRvbmUgfSwgaW5kZXgpIGluIGl0ZW1zXCJcbiAgICAgICAgOmNsYXNzPVwieyBkb25lIH1cIlxuICAgICAgICBAY2xpY2s9XCJ0b2dnbGVJdGVtKGluZGV4KVwiPlxuICAgICAgICB7eyB0aXRsZSB9fVxuICAgIDwvbGk+XG4gIDwvdWw+XG48L3RlbXBsYXRlPlxuXG48c3R5bGU+XG4uZG9uZSB7XG4gIHRleHQtZGVjb3JhdGlvbjogbGluZS10aHJvdWdoO1xufVxuPC9zdHlsZT4iLCJpbXBvcnQtbWFwLmpzb24iOiJ7XG4gIFwiaW1wb3J0c1wiOiB7XG4gICAgXCJ2dWVcIjogXCJodHRwczovL3NmYy52dWVqcy5vcmcvdnVlLnJ1bnRpbWUuZXNtLWJyb3dzZXIuanNcIixcbiAgICBcImltbWVyXCI6IFwiaHR0cHM6Ly91bnBrZy5jb20vaW1tZXJAOS4wLjcvZGlzdC9pbW1lci5lc20uanM/bW9kdWxlXCJcbiAgfVxufSIsImltbWVyLmpzIjoiaW1wb3J0IHByb2R1Y2UgZnJvbSBcImltbWVyXCJcbmltcG9ydCB7IHNoYWxsb3dSZWYgfSBmcm9tICd2dWUnXG5cbmV4cG9ydCBmdW5jdGlvbiB1c2VJbW1lcihiYXNlU3RhdGUpIHtcbiBcdCBjb25zdCBzdGF0ZSA9IHNoYWxsb3dSZWYoYmFzZVN0YXRlKVxuICAgXG4gICByZXR1cm4ge1xuICAgICBzdGF0ZSxcbiAgICAgdXBkYXRlKHVwZGF0ZXIpIHtcbiAgICAgICBzdGF0ZS52YWx1ZSA9IHByb2R1Y2Uoc3RhdGUudmFsdWUsIHVwZGF0ZXIpXG4gICAgIH1cbiAgIH1cbn1cbiJ9)
+[Try it in the Playground](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdCBzZXR1cD5cbmltcG9ydCB7IHVzZUltbWVyIH0gZnJvbSAnLi9pbW1lci5qcydcbiAgXG5jb25zdCBbaXRlbXMsIHVwZGF0ZUl0ZW1zXSA9IHVzZUltbWVyKFtcbiAge1xuICAgICB0aXRsZTogXCJMZWFybiBWdWVcIixcbiAgICAgZG9uZTogdHJ1ZVxuICB9LFxuICB7XG4gICAgIHRpdGxlOiBcIlVzZSBWdWUgd2l0aCBJbW1lclwiLFxuICAgICBkb25lOiBmYWxzZVxuICB9XG5dKVxuXG5mdW5jdGlvbiB0b2dnbGVJdGVtKGluZGV4KSB7XG4gIHVwZGF0ZUl0ZW1zKGl0ZW1zID0+IHtcbiAgICBpdGVtc1tpbmRleF0uZG9uZSA9ICFpdGVtc1tpbmRleF0uZG9uZVxuICB9KVxufVxuPC9zY3JpcHQ+XG5cbjx0ZW1wbGF0ZT5cbiAgPHVsPlxuICAgIDxsaSB2LWZvcj1cIih7IHRpdGxlLCBkb25lIH0sIGluZGV4KSBpbiBpdGVtc1wiXG4gICAgICAgIDpjbGFzcz1cInsgZG9uZSB9XCJcbiAgICAgICAgQGNsaWNrPVwidG9nZ2xlSXRlbShpbmRleClcIj5cbiAgICAgICAge3sgdGl0bGUgfX1cbiAgICA8L2xpPlxuICA8L3VsPlxuPC90ZW1wbGF0ZT5cblxuPHN0eWxlPlxuLmRvbmUge1xuICB0ZXh0LWRlY29yYXRpb246IGxpbmUtdGhyb3VnaDtcbn1cbjwvc3R5bGU+IiwiaW1wb3J0LW1hcC5qc29uIjoie1xuICBcImltcG9ydHNcIjoge1xuICAgIFwidnVlXCI6IFwiaHR0cHM6Ly9zZmMudnVlanMub3JnL3Z1ZS5ydW50aW1lLmVzbS1icm93c2VyLmpzXCIsXG4gICAgXCJpbW1lclwiOiBcImh0dHBzOi8vdW5wa2cuY29tL2ltbWVyQDkuMC43L2Rpc3QvaW1tZXIuZXNtLmpzP21vZHVsZVwiXG4gIH1cbn0iLCJpbW1lci5qcyI6ImltcG9ydCBwcm9kdWNlIGZyb20gJ2ltbWVyJ1xuaW1wb3J0IHsgc2hhbGxvd1JlZiB9IGZyb20gJ3Z1ZSdcblxuZXhwb3J0IGZ1bmN0aW9uIHVzZUltbWVyKGJhc2VTdGF0ZSkge1xuICBjb25zdCBzdGF0ZSA9IHNoYWxsb3dSZWYoYmFzZVN0YXRlKVxuICBjb25zdCB1cGRhdGUgPSAodXBkYXRlcikgPT4ge1xuICAgIHN0YXRlLnZhbHVlID0gcHJvZHVjZShzdGF0ZS52YWx1ZSwgdXBkYXRlcilcbiAgfVxuXG4gIHJldHVybiBbc3RhdGUsIHVwZGF0ZV1cbn0ifQ==)
 
 ### State Machines
 
-[State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) is a model for describing all the possible states an application can be in, and all the possible ways it can transition from one state to another. While it may be an overkill for simple components, it can help make complex state flows more robust and manageable.
+[State Machine](https://en.wikipedia.org/wiki/Finite-state_machine) is a model for describing all the possible states an application can be in, and all the possible ways it can transition from one state to another. While it may be overkill for simple components, it can help make complex state flows more robust and manageable.
 
 One of the most popular state machine implementations in JavaScript is [XState](https://xstate.js.org/). Here's a composable that integrates with it:
 
@@ -399,19 +397,15 @@ export function useMachine(options) {
   const machine = createMachine(options)
   const state = shallowRef(machine.initialState)
   const service = interpret(machine)
-  	.onTransition(newState => state.value = newState)
+    .onTransition((newState) => (state.value = newState))
     .start()
+  const send = (event) => service.send(event)
 
-  return {
-    state,
-    send(event) {
-      service.send(event)
-    }
-  }
+  return [state, send]
 }
 ```
 
-[Try it in the Playground](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdCBzZXR1cD5cbmltcG9ydCB7IHVzZU1hY2hpbmUgfSBmcm9tICcuL21hY2hpbmUuanMnXG4gIFxuY29uc3QgeyBzdGF0ZSwgc2VuZCB9ID0gdXNlTWFjaGluZSh7XG4gIGlkOiAndG9nZ2xlJyxcbiAgaW5pdGlhbDogJ2luYWN0aXZlJyxcbiAgc3RhdGVzOiB7XG4gICAgaW5hY3RpdmU6IHsgb246IHsgVE9HR0xFOiAnYWN0aXZlJyB9IH0sXG4gICAgYWN0aXZlOiB7IG9uOiB7IFRPR0dMRTogJ2luYWN0aXZlJyB9IH1cbiAgfVxufSlcbjwvc2NyaXB0PlxuXG48dGVtcGxhdGU+XG4gIDxidXR0b24gQGNsaWNrPVwic2VuZCgnVE9HR0xFJylcIj5cbiAgICB7eyBzdGF0ZS5tYXRjaGVzKFwiaW5hY3RpdmVcIikgPyBcIk9mZlwiIDogXCJPblwiIH19XG4gIDwvYnV0dG9uPlxuPC90ZW1wbGF0ZT4iLCJpbXBvcnQtbWFwLmpzb24iOiJ7XG4gIFwiaW1wb3J0c1wiOiB7XG4gICAgXCJ2dWVcIjogXCJodHRwczovL3NmYy52dWVqcy5vcmcvdnVlLnJ1bnRpbWUuZXNtLWJyb3dzZXIuanNcIixcbiAgICBcInhzdGF0ZVwiOiBcImh0dHBzOi8vdW5wa2cuY29tL3hzdGF0ZUA0LjI3LjAvZXMvaW5kZXguanM/bW9kdWxlXCJcbiAgfVxufSIsIm1hY2hpbmUuanMiOiJpbXBvcnQgeyBjcmVhdGVNYWNoaW5lLCBpbnRlcnByZXQgfSBmcm9tICd4c3RhdGUnXG5pbXBvcnQgeyBzaGFsbG93UmVmIH0gZnJvbSAndnVlJ1xuXG5leHBvcnQgZnVuY3Rpb24gdXNlTWFjaGluZShvcHRpb25zKSB7XG4gIGNvbnN0IG1hY2hpbmUgPSBjcmVhdGVNYWNoaW5lKG9wdGlvbnMpXG4gIGNvbnN0IHN0YXRlID0gc2hhbGxvd1JlZihtYWNoaW5lLmluaXRpYWxTdGF0ZSlcbiAgY29uc3Qgc2VydmljZSA9IGludGVycHJldChtYWNoaW5lKVxuICBcdC5vblRyYW5zaXRpb24obmV3U3RhdGUgPT4gc3RhdGUudmFsdWUgPSBuZXdTdGF0ZSlcbiAgICAuc3RhcnQoKVxuICByZXR1cm4ge1xuICAgIHN0YXRlLFxuICAgIHNlbmQoZXZlbnQpIHtcbiAgICAgIHNlcnZpY2Uuc2VuZChldmVudClcbiAgICB9XG4gIH1cbn0ifQ==)
+[Try it in the Playground](https://sfc.vuejs.org/#eyJBcHAudnVlIjoiPHNjcmlwdCBzZXR1cD5cbmltcG9ydCB7IHVzZU1hY2hpbmUgfSBmcm9tICcuL21hY2hpbmUuanMnXG4gIFxuY29uc3QgW3N0YXRlLCBzZW5kXSA9IHVzZU1hY2hpbmUoe1xuICBpZDogJ3RvZ2dsZScsXG4gIGluaXRpYWw6ICdpbmFjdGl2ZScsXG4gIHN0YXRlczoge1xuICAgIGluYWN0aXZlOiB7IG9uOiB7IFRPR0dMRTogJ2FjdGl2ZScgfSB9LFxuICAgIGFjdGl2ZTogeyBvbjogeyBUT0dHTEU6ICdpbmFjdGl2ZScgfSB9XG4gIH1cbn0pXG48L3NjcmlwdD5cblxuPHRlbXBsYXRlPlxuICA8YnV0dG9uIEBjbGljaz1cInNlbmQoJ1RPR0dMRScpXCI+XG4gICAge3sgc3RhdGUubWF0Y2hlcyhcImluYWN0aXZlXCIpID8gXCJPZmZcIiA6IFwiT25cIiB9fVxuICA8L2J1dHRvbj5cbjwvdGVtcGxhdGU+IiwiaW1wb3J0LW1hcC5qc29uIjoie1xuICBcImltcG9ydHNcIjoge1xuICAgIFwidnVlXCI6IFwiaHR0cHM6Ly9zZmMudnVlanMub3JnL3Z1ZS5ydW50aW1lLmVzbS1icm93c2VyLmpzXCIsXG4gICAgXCJ4c3RhdGVcIjogXCJodHRwczovL3VucGtnLmNvbS94c3RhdGVANC4yNy4wL2VzL2luZGV4LmpzP21vZHVsZVwiXG4gIH1cbn0iLCJtYWNoaW5lLmpzIjoiaW1wb3J0IHsgY3JlYXRlTWFjaGluZSwgaW50ZXJwcmV0IH0gZnJvbSAneHN0YXRlJ1xuaW1wb3J0IHsgc2hhbGxvd1JlZiB9IGZyb20gJ3Z1ZSdcblxuZXhwb3J0IGZ1bmN0aW9uIHVzZU1hY2hpbmUob3B0aW9ucykge1xuICBjb25zdCBtYWNoaW5lID0gY3JlYXRlTWFjaGluZShvcHRpb25zKVxuICBjb25zdCBzdGF0ZSA9IHNoYWxsb3dSZWYobWFjaGluZS5pbml0aWFsU3RhdGUpXG4gIGNvbnN0IHNlcnZpY2UgPSBpbnRlcnByZXQobWFjaGluZSlcbiAgICAub25UcmFuc2l0aW9uKChuZXdTdGF0ZSkgPT4gKHN0YXRlLnZhbHVlID0gbmV3U3RhdGUpKVxuICAgIC5zdGFydCgpXG4gIGNvbnN0IHNlbmQgPSAoZXZlbnQpID0+IHNlcnZpY2Uuc2VuZChldmVudClcblxuICByZXR1cm4gW3N0YXRlLCBzZW5kXVxufSJ9)
 
 ### RxJS
 
