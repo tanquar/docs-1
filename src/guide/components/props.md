@@ -8,7 +8,7 @@
 
 ## Props Declaration
 
-Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in the next section).
+Vue components require explicit props declaration so that Vue knows what external props passed to the component should be treated as fallthrough attributes (which will be discussed in [its dedicated section](/guide/components/attrs)).
 
 <div class="composition-api">
 
@@ -398,8 +398,9 @@ defineProps({
   propE: {
     type: Object,
     // Object or array defaults must be returned from
-    // a factory function
-    default() {
+    // a factory function. The function receives the raw
+    // props received by the component as the argument.
+    default(rawProps) {
       return { message: 'hello' }
     }
   },
@@ -453,7 +454,6 @@ export default {
       // a factory function. The function receives the raw
       // props received by the component as the argument.
       default(rawProps) {
-        // default function receives the raw props object as argument
         return { message: 'hello' }
       }
     },
